@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Auth\RegisterUserRequest;
+use App\Http\Requests\Auth\LoginUserRequest;
+use App\Http\Services\UserService;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,30 +13,12 @@ use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
 {
     //
-    public function register(Request $request)
+    public function register(RegisterUserRequest $request, UserService $userService)
     {
-        $vaildator = Validator::make($request->all(), [
-            'name' => ['required'],
-            'email' => ['required', 'email', 'unique:users'],
-            'password' => ['required']
-        ]);
-
-        if ($vaildator->fails()) {
-            return response()->json(
-                [
-                    'error' => $vaildator->messages()
-                ],
-                422
-            );
-        }
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => $request->password,
-        ]);
-        $user->assignRole('user');
-        $token = $user->createToken('auth_token')->plainTextToken;
+        //Create the user
+        $user = $userService->RegisterUserService($request->ToDto());
+        //Generate the token for the user
+        $token = $userService->CreateTokenService($user);
 
         return [
             'user' => $user,
@@ -41,29 +26,14 @@ class AuthController extends Controller
         ];
     }
 
-    public function login(Request $request)
+    public function login(LoginUserRequest $request, UserService $userService)
     {
-        $vaildator = Validator::make($request->all(), [
-            'email' => ['required', 'email', 'exists:users'],
-            'password' => ['required']
-        ]);
-
-        if ($vaildator->fails()) {
-            return response()->json(
-                [
-                    'error' => $vaildator->messages()
-                ],
-                422
-            );
-        }
-
-        $user = User::where('email', $request['email'])->first();
-
         if (Auth::attempt([
-            'email' => $request->email,
-            'password' => $request->password
+            'email' => $request->ToDto()->email,
+            'password' => $request->ToDto()->password
         ])) {
-            $token = $user->createToken('auth_token')->plainTextToken;
+            $user = User::where('email', $request['email'])->first();
+            $token = $userService->CreateTokenService($user);
 
             return [
                 'user' => $user,
