@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Author\StoreAuthorRequest;
+use App\Http\Requests\Author\UpdateAuthorRequest;
+use App\Http\Services\AuthorService;
 use App\Models\author;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,34 +24,10 @@ class AuthorController extends Controller
     /**
      * Store a newly created author in db.
      */
-    public function store(Request $request)
+    public function store(StoreAuthorRequest $request, AuthorService $authorService)
     {
-        $vaildator = Validator::make($request->all(), [
-            'name' => ['required'],
-            'bio' => ['required'],
-            'email' => ['required', 'email', 'unique:authors'],
-            'image' => ['file', 'mimes:png,jpg'],
-        ]);
-
-        if ($vaildator->fails()) {
-            return response()->json(
-                [
-                    'error' => $vaildator->messages()
-                ],
-                422
-            );
-        }
-        $path = null;
-        if ($request->hasFile('image')) {
-            $path = Storage::disk('public')->put('/images', $request->image);
-        }
-
-        return author::create([
-            'name' => $request->name,
-            'bio' => $request->bio,
-            'email' => $request->email,
-            'image' => $path
-        ]);
+        $author = $authorService->StoreAuthorService($request);
+        return $author;
     }
 
     /**
@@ -67,47 +46,18 @@ class AuthorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, author $author)
+    public function update(UpdateAuthorRequest $request, author $author, AuthorService $authorService)
     {
-        $vaildator = Validator::make($request->all(), [
-            'name' => ['required'],
-            'bio' => ['required'],
-            'email' => ['required', 'email'],
-            'image' => ['file', 'mimes:png,jpg'],
-        ]);
-
-        if ($vaildator->fails()) {
-            return response()->json(
-                [
-                    'error' => $vaildator->messages()
-                ],
-                422
-            );
-        }
-        $path =  $author->image ?? null;
-        if ($request->hasFile('image')) {
-            if ($author->image) {
-                Storage::disk('public')->delete($author->image);
-            }
-            $path = Storage::disk('public')->put('/images', $request->image);
-        }
-
-        return $author->update([
-            'name' => $request->name,
-            'bio' => $request->bio,
-            'email' => $request->email,
-            'image' => $path
-        ]);
+        $authorService->UpdateAuthorService($request, $author);
+        return $author;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(author $author)
+    public function destroy(author $author, AuthorService $authorService)
     {
-        //
-        Storage::disk('public')->delete($author->image);
-        $author->delete();
+        $authorService->DeleteAuthorService($author);
         return response()->json([
             'message' => 'author deleted'
         ]);
