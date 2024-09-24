@@ -2,54 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\reservation;
+use App\Http\Requests\Reservation\ReservationRequest;
+use App\Http\Services\ReservationService;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class ReservationController extends Controller
 {
-    public function userReservations()
+    public function userReservations(ReservationService $reservationService)
     {
-        $user = Auth::user();
-        $reservayions = reservation::where('user_id', '==', "$user->id")->get();
-        return $reservayions;
+        $reservations = $reservationService->userReservationsService();
+        return response()->json($reservations);
     }
 
-    public function makeReservations(Request $request)
+    public function makeReservations(ReservationRequest $request, ReservationService $reservationService)
     {
-        $vaildator = Validator::make($request->all(), [
-            'length' => ['required'],
-            'book_id' => ['required', 'unique:reservations'],
-        ]);
-
-        if ($vaildator->fails()) {
-            return response()->json(
-                [
-                    'error' => $vaildator->messages()
-                ],
-                422
-            );
-        }
-        //get current user
-        $user = Auth::user();
-
-        return reservation::create([
-            'length' => $request->length,
-            'book_id' => $request->book_id,
-            'user_id' => $user->id,
-        ]);
+        $reservation = $reservationService->makeReservationsService($request->toDto());
+        return $reservation;
     }
 
-    public function cancelReservations(reservation $reservation)
+    public function cancelReservations(Reservation $reservation, ReservationService $reservationService)
     {
-        //get current user
-        $user = Auth::user();
-        if ($reservation->user_id == $user->id) {
-            $reservation->delete();
-            return response()->json(['message' => 'you canceld your reservation']);
-        } else {
-            return response()->json(['message' => 'you cannot cancel the reservation']);
-        }
+        $reservationService->cancelReservationsService($reservation);
+        return response()->json(['message' => 'you canceld your reservation']);
     }
 }

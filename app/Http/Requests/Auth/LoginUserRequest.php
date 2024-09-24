@@ -49,7 +49,7 @@ class LoginUserRequest extends FormRequest
      *
      */
 
-    public function ToDto(): LoginUserDto
+    public function toDto(): LoginUserDto
     {
         return new LoginUserDto($this->email, $this->password);
     }

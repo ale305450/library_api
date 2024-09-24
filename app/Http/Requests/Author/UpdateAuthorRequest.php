@@ -49,8 +49,8 @@ class UpdateAuthorRequest extends FormRequest
      * Link the DTO with the request.
      *
      */
-    public function ToDto(): UpdateAuthorDto
+    public function toDto(): UpdateAuthorDto
     {
-        return new UpdateAuthorDto($this->name,$this->bio, $this->image);
+        return new UpdateAuthorDto($this->name, $this->bio, $this->image);
     }
 }

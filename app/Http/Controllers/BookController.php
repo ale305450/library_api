@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Book\BookRequest;
 use App\Http\Services\BookService;
-use App\Models\book;
+use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,7 +17,7 @@ class BookController extends Controller
      */
     public function index()
     {
-        $books = book::with(['categories', 'authors'])->get();
+        $books = Book::with(['categories', 'authors'])->get();
         return $books;
     }
 
@@ -26,7 +26,7 @@ class BookController extends Controller
      */
     public function store(BookRequest $request, BookService $bookService)
     {
-        $book = $bookService->StoreBookRequest($request->ToDto());
+        $book = $bookService->storeBookRequest($request->toDto());
 
         return $book;
     }
@@ -34,7 +34,7 @@ class BookController extends Controller
     /**
      * Display the specified book.
      */
-    public function show(book $book)
+    public function show(Book $book)
     {
         return $book->load('categories', 'authors');
     }
@@ -42,18 +42,18 @@ class BookController extends Controller
     /**
      * Update the specified book in storage.
      */
-    public function update(BookRequest $request, book $book, BookService $bookService)
+    public function update(BookRequest $request, Book $book, BookService $bookService)
     {
-        $bookService->UpdateBookRequest($request->ToDto(), $book);
+        $bookService->updateBookRequest($request->toDto(), $book);
         return $book;
     }
 
     /**
      * Remove the specified book from storage.
      */
-    public function destroy(book $book, BookService $bookService)
+    public function destroy(Book $book, BookService $bookService)
     {
-        $bookService->DeleteBookRequest($book);
+        $bookService->deleteBookRequest($book);
         return response()->json([
             'message' => 'Book deleted'
         ]);
@@ -64,7 +64,7 @@ class BookController extends Controller
      */
     public function search(Request $request, BookService $bookService)
     {
-        $result = $bookService->SearchBookRequest($request);
+        $result = $bookService->searchBookRequest($request);
         return $result;
     }
 }

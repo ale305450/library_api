@@ -49,7 +49,7 @@ class StoreAuthorRequest extends FormRequest
      * Link the DTO with the request.
      *
      */
-    public function ToDto(): StoreAuthorDto
+    public function toDto(): StoreAuthorDto
     {
         return new StoreAuthorDto($this->name, $this->bio,$this->email,$this->image);
     }

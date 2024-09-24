@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class reservation extends Model
+class Reservation extends Model
 {
     use HasFactory;
 
@@ -17,7 +17,7 @@ class reservation extends Model
 
     public function books()
     {
-        return $this->belongsToMany(book::class,'book_id');
+        return $this->belongsToMany(Book::class,'book_id');
     }
 
     public function users()

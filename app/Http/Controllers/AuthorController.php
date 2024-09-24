@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Author\StoreAuthorRequest;
 use App\Http\Requests\Author\UpdateAuthorRequest;
 use App\Http\Services\AuthorService;
-use App\Models\author;
+use App\Models\Author;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -18,7 +18,7 @@ class AuthorController extends Controller
      */
     public function index()
     {
-        return author::all();
+        return Author::all();
     }
 
     /**
@@ -26,16 +26,16 @@ class AuthorController extends Controller
      */
     public function store(StoreAuthorRequest $request, AuthorService $authorService)
     {
-        $author = $authorService->StoreAuthorService($request);
+        $author = $authorService->storeAuthorService($request);
         return $author;
     }
 
     /**
      * Display the specified author.
      */
-    public function show(author $author)
+    public function show(Author $author)
     {
-        $author = author::find($author);
+        $author = Author::find($author);
         if ($author == null) {
             return response()->json(['error' => 'no author can be found']);
         }
@@ -46,18 +46,18 @@ class AuthorController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAuthorRequest $request, author $author, AuthorService $authorService)
+    public function update(UpdateAuthorRequest $request, Author $author, AuthorService $authorService)
     {
-        $authorService->UpdateAuthorService($request, $author);
+        $authorService->updateAuthorService($request, $author);
         return $author;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(author $author, AuthorService $authorService)
+    public function destroy(Author $author, AuthorService $authorService)
     {
-        $authorService->DeleteAuthorService($author);
+        $authorService->deleteAuthorService($author);
         return response()->json([
             'message' => 'author deleted'
         ]);

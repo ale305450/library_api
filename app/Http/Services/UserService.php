@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class UserService
 {
-    public function RegisterUserService(RegisterUserDto $registerUserDto): User
+    public function registerUserService(RegisterUserDto $registerUserDto): User
     {
         $user = User::create([
             'name' => $registerUserDto->name,
@@ -20,7 +20,7 @@ class UserService
         return $user;
     }
 
-    public function CreateTokenService(User $user): string
+    public function createTokenService(User $user): string
     {
         $token = $user->createToken('auth_token')->plainTextToken;
         return $token;

@@ -1,15 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Auth;
+namespace App\Http\Requests\Category;
 
-use App\Http\DTOs\User\RegisterUserDto;
+use App\Http\DTOs\Category\CategoryDto;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 
-use function Laravel\Prompts\password;
-
-class RegisterUserRequest extends FormRequest
+class CategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,12 +25,9 @@ class RegisterUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required'],
-            'email' => ['required', 'email', 'unique:users'],
-            'password' => ['required']
+            'name' => ['required', 'unique:categories']
         ];
     }
-
     /**
      * Get the validation errors that may accure in the request.
      *
@@ -50,9 +45,8 @@ class RegisterUserRequest extends FormRequest
      * Link the DTO with the request.
      *
      */
-
-    public function toDto(): RegisterUserDto
+    public function toDto(): CategoryDto
     {
-        return new RegisterUserDto($this->name,$this->email,$this->password);
+        return new CategoryDto($this->name);
     }
 }

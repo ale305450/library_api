@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\category;
+use App\Http\Requests\Category\CategoryRequest;
+use App\Http\Services\CategoryService;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -13,32 +15,22 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return category::all();
+        return Category::all();
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CategoryRequest $request, CategoryService $categoryService)
     {
-        $vaildator = Validator::make(
-            $request->all(),
-            ['name' => ['required','unique:categories']]
-        );
-        if ($vaildator->fails()) {
-            return response()->json(
-                ['error' => $vaildator->messages()],
-                422
-            );
-        }
-
-        return category::create(['name' => $request->name]);
+        $category = $categoryService->storeCategorySevice($request->toDto());
+        return $category;
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(category $category)
+    public function show(Category $category)
     {
         return $category;
     }
@@ -46,30 +38,19 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, category $category)
+    public function update(CategoryRequest $request, Category $category, CategoryService $categoryService)
     {
-        $vaildator = Validator::make(
-            $request->all(),
-            ['name' => ['required','unique:categories']]
-        );
-        if ($vaildator->fails()) {
-            return response()->json(
-                ['error' => $vaildator->messages()],
-                422
-            );
-        }
+        $categoryService->updateCategorySevice($request->toDto(), $category);
 
-        return $category->update([
-            'name' => $request->name
-        ]);
+        return $category;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(category $category)
+    public function destroy(Category $category, CategoryService $categoryService)
     {
-        return $category->delete();
+        $categoryService->deleteCategorySevice($category);
         return response()->json([
             'message' => 'category deleted'
         ]);

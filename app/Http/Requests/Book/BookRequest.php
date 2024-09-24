@@ -48,7 +48,7 @@ class BookRequest extends FormRequest
      * Link the DTO with the request.
      *
      */
-    public function ToDto(): BookDto
+    public function toDto(): BookDto
     {
         return new BookDto($this->name, $this->pages_count, $this->category_id, $this->author_id);
     }
