@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Book\BookRequest;
+use App\Http\Services\BookService;
 use App\Models\book;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -22,30 +24,11 @@ class BookController extends Controller
     /**
      * Store a newly created book in storage.
      */
-    public function store(Request $request)
+    public function store(BookRequest $request, BookService $bookService)
     {
-        $vaildator = Validator::make($request->all(), [
-            'name' => ['required'],
-            'pages_count' => ['required', 'min_digits:2'],
-            'category_id' => ['required'],
-            'author_id' => ['required'],
-        ]);
+        $book = $bookService->StoreBookRequest($request->ToDto());
 
-        if ($vaildator->fails()) {
-            return response()->json(
-                [
-                    'error' => $vaildator->messages()
-                ],
-                422
-            );
-        }
-
-        return book::create([
-            'name' => $request->name,
-            'pages_count' => $request->pages_count,
-            'category_id' => $request->category_id,
-            'author_id' => $request->author_id,
-        ]);
+        return $book;
     }
 
     /**
@@ -59,47 +42,29 @@ class BookController extends Controller
     /**
      * Update the specified book in storage.
      */
-    public function update(Request $request, book $book)
+    public function update(BookRequest $request, book $book, BookService $bookService)
     {
-        $vaildator = Validator::make($request->all(), [
-            'name' => ['required'],
-            'pages_count' => ['required', 'min_digits:2'],
-            'category_id' => ['required'],
-            'author_id' => ['required'],
-        ]);
-
-        if ($vaildator->fails()) {
-            return response()->json(
-                [
-                    'error' => $vaildator->messages()
-                ],
-                422
-            );
-        }
-
-        return $book->update([
-            'name' => $request->name,
-            'pages_count' => $request->pages_count,
-            'category_id' => $request->category_id,
-            'author_id' => $request->author_id,
-        ]);
+        $bookService->UpdateBookRequest($request->ToDto(), $book);
+        return $book;
     }
 
     /**
      * Remove the specified book from storage.
      */
-    public function destroy(book $book)
+    public function destroy(book $book, BookService $bookService)
     {
-        return $book->delete();
+        $bookService->DeleteBookRequest($book);
+        return response()->json([
+            'message' => 'Book deleted'
+        ]);
     }
 
     /**
      * Search for the specified book from storage.
      */
-    public function search(Request $request)
+    public function search(Request $request, BookService $bookService)
     {
-        $search = $request->name;
-        $result = book::where('name', 'like', "%$search%")->get();
+        $result = $bookService->SearchBookRequest($request);
         return $result;
     }
 }
