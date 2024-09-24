@@ -3,14 +3,14 @@
 namespace App\Http\Services;
 
 use App\Http\DTOs\Book\BookDto;
-use App\Models\book;
+use App\Models\Book;
 use Illuminate\Http\Request;
 
 class BookService
 {
-    public function StoreBookRequest(BookDto $bookDto): book
+    public function storeBookRequest(BookDto $bookDto): Book
     {
-        return book::create([
+        return Book::create([
             'name' => $bookDto->name,
             'pages_count' => $bookDto->pages_count,
             'category_id' => $bookDto->category_id,
@@ -18,7 +18,7 @@ class BookService
         ]);
     }
 
-    public function UpdateBookRequest(BookDto $bookDto, book $book)
+    public function updateBookRequest(BookDto $bookDto, Book $book)
     {
         return $book->update([
             'name' => $bookDto->name,
@@ -28,12 +28,12 @@ class BookService
         ]);
     }
 
-    public function DeleteBookRequest(book $book)
+    public function deleteBookRequest(Book $book)
     {
         $book->delete();
     }
 
-    public function SearchBookRequest(Request $request): book
+    public function searchBookRequest(Request $request): book
     {
         $search = $request->name;
         return book::where('name', 'like', "%$search%")->get();

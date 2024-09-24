@@ -1,15 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Auth;
+namespace App\Http\Requests\Reservation;
 
-use App\Http\DTOs\User\RegisterUserDto;
+use App\Http\DTOs\Reservation\ReservationDto;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
 
-use function Laravel\Prompts\password;
-
-class RegisterUserRequest extends FormRequest
+class ReservationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,12 +25,10 @@ class RegisterUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required'],
-            'email' => ['required', 'email', 'unique:users'],
-            'password' => ['required']
+            'length' => ['required'],
+            'book_id' => ['required', 'unique:reservations'],
         ];
     }
-
     /**
      * Get the validation errors that may accure in the request.
      *
@@ -50,9 +46,8 @@ class RegisterUserRequest extends FormRequest
      * Link the DTO with the request.
      *
      */
-
-    public function toDto(): RegisterUserDto
+    public function toDto(): ReservationDto
     {
-        return new RegisterUserDto($this->name,$this->email,$this->password);
+        return new ReservationDto($this->length, $this->book_id);
     }
 }
